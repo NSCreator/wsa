@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "474581757125",
+    "project_id": "wsapp-e3289",
+    "storage_bucket": "wsapp-e3289.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:474581757125:android:88562080d80964c25ed4ac",
+        "android_client_info": {
+          "package_name": "com.nimmalasujith.wsa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "474581757125-ra5fbekk4v5ltl6lv6pm8h860qbuh4l5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDT3Xlmx6p58Qf5lAp0bOA41CcOt8bOXXA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "474581757125-pm11eer6clm5n4jioo91ee8ajha88fd6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
