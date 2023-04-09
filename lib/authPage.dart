@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:wsa/profilePage.dart';
 
 import 'homePage.dart';
 import 'main.dart';
@@ -140,7 +141,25 @@ class _LoginPageState extends State<LoginPage> {
                                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
                                   )),
                             ),
-                            onTap: signIn,
+                            onTap: () async {
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>profile()));
+                              // showDialog(
+                              //     context: context,
+                              //     barrierDismissible: false,
+                              //     builder: (context) => const Center(
+                              //       child: CircularProgressIndicator(),
+                              //     ));
+                              // try {
+                              //   await FirebaseAuth.instance.signInWithEmailAndPassword( email: emailController.text.trim().toLowerCase(), password: passwordController.text.trim());
+                              //   Navigator.pop(context);
+                              //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomePage()));
+                              // } on FirebaseException catch (e) {
+                              //   print(e);
+                              //   Utils.showSnackBar(e.message);
+                              // }
+
+
+                            },
                           ),
                         ),
 
@@ -386,28 +405,12 @@ class _LoginPageState extends State<LoginPage> {
         ));
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(email: emailController.text.trim().toLowerCase(), password: passwordController.text.trim());
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyApp()));
     } on FirebaseException catch (e) {
       print(e);
       Utils.showSnackBar(e.message);
     }
-    Navigator.pop(context);
 
-  }
-
-  Future signIn() async {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(),
-        ));
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword( email: emailController.text.trim().toLowerCase(), password: passwordController.text.trim());
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomePage()));
-    } on FirebaseException catch (e) {
-      print(e);
-      Utils.showSnackBar(e.message);
-    }
     Navigator.pop(context);
 
 

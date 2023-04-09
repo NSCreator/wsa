@@ -1,15 +1,23 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:battery_plus/battery_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:countdown_flutter/countdown_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wsa/authPage.dart';
+import 'package:wsa/settings.dart';
 import 'package:wsa/speechRecognition.dart';
 
 import 'drivingModeDetector.dart';
 import 'googleMaps.dart';
 import 'notification.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -19,9 +27,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   var battery = Battery();
   int percentage = 0;
   late Timer timer;
+  int _secondsRemaining = 5; // The number of seconds to count down
+  bool _isDialogOpen = false;
 
 
 
@@ -29,22 +40,54 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    Timer.periodic(const Duration(seconds: 3), (timer) {
+    Timer.periodic(const Duration(seconds: 100), (timer) {
       getBatteryPerentage();
 
     });
-
+    var initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettings =
+    InitializationSettings(android: initializationSettingsAndroid);
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   }
   void getBatteryPerentage() async {
     final level = await battery.batteryLevel;
     if(percentage != level){
-      percentage = level;
-      setState(() {});
+      FirebaseFirestore.instance.collection('Family').doc("m90h4LQ10CA7fxqnMpJA").collection("members").doc("oFZ005m9YyyCDRyXk5YZ")
+          .update({
+        "battery":level
+      });
     }
-
-
   }
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
+
+
+  Future onSelectNotification(String payload) {
+    return showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: Text("Payload"),
+          content: Text("Payload : $payload"),
+        );
+      },
+    );
+  }
+
+  Future<void> _showNotification(String body) async {
+    var androidDetails = const AndroidNotificationDetails(
+        "channelId", "Local Notification",
+        importance: Importance.high);
+    var generalNotificationDetails =
+    NotificationDetails(android: androidDetails);
+    await flutterLocalNotificationsPlugin.show(
+        0, "SoS Alert", body, generalNotificationDetails,
+        payload: "Welcome to the Local Notification demo");
+  }
+
 
 
   @override
@@ -56,9 +99,29 @@ class _HomePageState extends State<HomePage> {
           children: [
               Row(
                 children: [
-                   Text("WS App",style: TextStyle(color: Colors.white,fontSize: 30),),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10,top: 5),
+                    child: ShaderMask(
+                      shaderCallback: (Rect bounds) {
+                        return RadialGradient(
+                          center: Alignment.topLeft,
+                          radius: 1.0,
+                          colors: <Color>[Colors.yellow, Colors.deepOrange.shade900],
+                          tileMode: TileMode.mirror,
+                        ).createShader(bounds);
+                      },
+                      child: const Text('WS App' , style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500),),
+                    ),
+                  ),
                   const Spacer(),
-                  const Icon(Icons.settings,color: Colors.grey,size: 30,),
+                  InkWell(
+                      child: const Icon(Icons.settings,color: Colors.grey,size: 30,),
+                  onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>const settings()));
+                  },),
                   const SizedBox(width: 20,)
                 ],
               ),
@@ -79,10 +142,10 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
                           children: [
-                             Text("Smart Band",style: TextStyle(color: Colors.white,fontSize: 25),),
-                            Spacer(),
-                            if(false)Text("Not Conected",style: TextStyle(color: Colors.red),)
-                            else Text("Conected",style: TextStyle(color: Colors.greenAccent),)
+                             const Text("Smart Band",style: TextStyle(color: Colors.white,fontSize: 25),),
+                            const Spacer(),
+                            if(false)const Text("Not Conected",style: TextStyle(color: Colors.red),)
+                            else const Text("Conected",style: TextStyle(color: Colors.greenAccent),)
                           ],
                         ),
                       ),
@@ -96,20 +159,101 @@ class _HomePageState extends State<HomePage> {
                           height: 100,
                           width: 100,
                           decoration: BoxDecoration(
-                              color: Colors.pink,
-                              borderRadius: BorderRadius.circular(50),
+                            color: Colors.pink,
+                            borderRadius: BorderRadius.circular(50),
                             boxShadow: [
-                            BoxShadow(
-                            blurRadius: 25.0,
-                              color: Colors.white
+                              const BoxShadow(
+                                  blurRadius: 25.0,
+                                  color: Colors.white
 
-                        )
-                        ],
+                              )
+                            ],
                           ),
                           child: const Center(child: Text("SOS",style: TextStyle(color: Colors.white,fontSize: 35),)),
                         ),
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>MyMap()));
+                        onTap:   () {
+                          if (!_isDialogOpen) {
+                            _isDialogOpen = true;
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Scaffold(
+                                  backgroundColor: Colors.transparent,
+                                  body: Center(
+                                    child: Container(
+
+                                      height: 250,
+                                      width: 250,
+                                      decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.9),
+                                          borderRadius: BorderRadius.circular(125),
+                                          boxShadow: [
+                                          const BoxShadow(
+                                          blurRadius: 25.0,
+                                          color: Colors.white
+
+                                      )
+                                      ],
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          const Text("SOS",style: TextStyle(color: Colors.red,fontSize: 25,fontWeight: FontWeight.w700),),
+                                          const Text("Is",style: TextStyle(color: Colors.red,fontSize: 25,fontWeight: FontWeight.w700),),
+                                          const Text("Activited",style: TextStyle(color: Colors.greenAccent,fontSize: 25,fontWeight: FontWeight.w700),),
+                                          CountdownFormatted(
+                                            duration: Duration(seconds: _secondsRemaining),
+                                            onFinish: () {
+                                              _showNotification("SoS button was pressed by Sujithnimmala");
+                                              Navigator.of(context).pop();
+                                            },
+                                            builder: (BuildContext ctx, String remaining) {
+                                              return Text("Remaining Time : $remaining",style: const TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.w700),);
+                                            },
+                                          ),
+                                          const SizedBox(height: 10,),
+                                          InkWell(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.black,
+                                                  borderRadius: BorderRadius.circular(100),
+                                                border: Border.all(color: Colors.white54)
+                                              ),
+                                              child: const Padding(
+                                                padding:  EdgeInsets.all(5.0),
+                                                child:  Text("Activate",style: TextStyle(color: Colors.white,fontSize: 25,fontWeight: FontWeight.w700),),
+                                              ),
+                                            ),
+
+                                          ),
+                                          const SizedBox(height: 5,),
+                                          InkWell(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.black,
+                                                  borderRadius: BorderRadius.circular(100),
+                                                  border: Border.all(color: Colors.white54)
+                                              ),
+                                              child: const Padding(
+                                                padding: EdgeInsets.all(5.0),
+                                                child: Text("Cancel",style: TextStyle(color: Colors.white,fontSize: 25,fontWeight: FontWeight.w700),),
+                                              ),
+                                            ),
+                                            onTap: (){
+                                              Navigator.pop(context);
+                                            },
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ).then((_) {
+                              _isDialogOpen = false;
+                            });
+                          }
                         },
                       ),
                     ),
@@ -192,10 +336,10 @@ class _HomePageState extends State<HomePage> {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                              Padding(
-                                              padding: EdgeInsets.only(left: 15,top: 5),
+                                              padding: const EdgeInsets.only(left: 15,top: 5),
                                               child: Text(
                                                 SubjectsData1.familyName,
-                                                style: TextStyle(color: Colors.white, fontSize: 25),
+                                                style: const TextStyle(color: Colors.white, fontSize: 30),
                                               ),
                                             ),
                                             Padding(
@@ -232,7 +376,7 @@ class _HomePageState extends State<HomePage> {
                                                                           width: 60,
                                                                           decoration: BoxDecoration(
                                                                               color: Colors.white,
-                                                                              image: DecorationImage(image: NetworkImage("https://pub.dev/static/hash-aps7rpf8/img/ff-banner-mobile-2x.png"),fit: BoxFit.cover),
+                                                                              image: const DecorationImage(image: NetworkImage("https://pub.dev/static/hash-aps7rpf8/img/ff-banner-mobile-2x.png"),fit: BoxFit.cover),
 
                                                                               borderRadius: BorderRadius.circular(35)
                                                                           ),
@@ -244,46 +388,68 @@ class _HomePageState extends State<HomePage> {
                                                                                 borderRadius: BorderRadius.circular(10)
                                                                               ),
                                                                               child: Row(
+                                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                                crossAxisAlignment: CrossAxisAlignment.center,
                                                                                 children: [
-                                                                                  SizedBox(width: 3,),
-                                                                                  Transform.rotate(
+                                                                                  const SizedBox(width: 3,),
+                                                                                  if(SubjectsData2.battery<10)Transform.rotate(
                                                                                       angle: -1.575,
-                                                                                      child: Icon(Icons.battery_full,size: 20,color: Colors.greenAccent,)),
-                                                                                  Text("${percentage}%",style: TextStyle(color: Colors.white,fontSize: 15),),
+                                                                                      child: const Icon(Icons.battery_0_bar,size: 20,color: Colors.red,))
+                                                                                  else if(SubjectsData2.battery<20)Transform.rotate(
+                                                                                      angle: -1.575,
+                                                                                      child: const Icon(Icons.battery_1_bar,size: 20,color: Colors.redAccent,))
+                                                                                  else if(SubjectsData2.battery<35)Transform.rotate(
+                                                                                      angle: -1.575,
+                                                                                      child: Icon(Icons.battery_2_bar,size: 20,color: Colors.orangeAccent.shade400,))
+                                                                                  else if(SubjectsData2.battery<50)Transform.rotate(
+                                                                                        angle: -1.575,
+                                                                                        child: const Icon(Icons.battery_3_bar,size: 20,color: Colors.orangeAccent,))
+                                                                                      else if(SubjectsData2.battery<65)Transform.rotate(
+                                                                                            angle: -1.575,
+                                                                                            child: const Icon(Icons.battery_4_bar,size: 20,color: Colors.orange,))
+                                                                                        else if(SubjectsData2.battery<80)Transform.rotate(
+                                                                                              angle: -1.575,
+                                                                                              child: Icon(Icons.battery_5_bar,size: 20,color: Colors.greenAccent.shade400,))
+                                                                                    else if(SubjectsData2.battery<90)Transform.rotate(
+                                                                                          angle: -1.575,
+                                                                                          child: const Icon(Icons.battery_6_bar,size: 20,color: Colors.greenAccent,))
+                                                                                  else Transform.rotate(
+                                                                                      angle: -1.575,
+                                                                                      child: const Icon(Icons.battery_full,size: 20,color: Colors.green,)),
+                                                                                  Text("${SubjectsData2.battery}% ",style: const TextStyle(color: Colors.white,fontSize: 15),),
 
                                                                                 ],
                                                                               ),
                                                                             )
                                                                           ),
                                                                         ),
-                                                                        Column(
-                                                                          mainAxisAlignment: MainAxisAlignment.start,
-                                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                                          children: [
-                                                                            Text(
-                                                                              SubjectsData2.familyName,
-                                                                              style: TextStyle(color: Colors.white, fontSize: 20),
-                                                                            ),
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.all(8.0),
-                                                                              child: Text("Location : ",style: TextStyle(color: Colors.white, fontSize: 15),),
-                                                                            ),
-                                                                            Row(
-                                                                              children: [
-                                                                                Transform.rotate(
-                                                                                    angle: -1.575,
-                                                                                    child: Icon(Icons.battery_full,size: 30,color: Colors.greenAccent,)),
-                                                                                Text("${percentage}%",style: TextStyle(color: Colors.white,fontSize: 18),),
-
-                                                                                Text("Last UPdated",style: TextStyle(color: Colors.white,fontSize: 13),)
-                                                                              ],
-                                                                            )
-                                                                          ],
+                                                                        Padding(
+                                                                          padding: const EdgeInsets.only(left: 10,right: 10),
+                                                                          child: Column(
+                                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                                            children: [
+                                                                              Text(
+                                                                                SubjectsData2.familyName,
+                                                                                style: const TextStyle(color: Colors.orangeAccent, fontSize: 20),
+                                                                              ),
+                                                                              Padding(
+                                                                                padding: const EdgeInsets.only(top: 3,left: 5),
+                                                                                child: Text("Location : ${SubjectsData2.location}",style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 15),),
+                                                                              ),
+                                                                              Padding(
+                                                                                padding: const EdgeInsets.only(top: 3,left: 5),
+                                                                                child: Text("Last Updated : {SubjectsData2.location}",style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 10),),
+                                                                              ),
+                                                                            ],
+                                                                          ),
                                                                         ),
                                                                       ],
                                                                     ),
                                                                   ),
-                                                                  onTap: ()  {},
+                                                                  onTap: ()  {
+                                                                      Navigator.push(context, MaterialPageRoute(builder: (context)=>MyMapWidget(lat: SubjectsData2.lat, lng: SubjectsData2.lng,)));
+                                                                  },
                                                                 );
                                                               },
                                                               separatorBuilder: (context, index) => const SizedBox(
@@ -294,18 +460,9 @@ class _HomePageState extends State<HomePage> {
                                                   }),
                                             ),
                                             Center(
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color:Colors.blueGrey,
-                                                  borderRadius: BorderRadius.circular(20)
-                                                ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(5.0),
-                                                  child: Text("Copy Token",style: TextStyle(color: Colors.white),),
-                                                ),
-                                              ),
+                                              child: CopyTextButton(textToCopy: SubjectsData1.id),
                                             ),
-                                            SizedBox(height: 10,)
+                                            const SizedBox(height: 10,)
                                           ],
                                         );
                                       },
@@ -317,8 +474,8 @@ class _HomePageState extends State<HomePage> {
                           }
                         }),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
                     child: Text("Our Live Location",style: TextStyle(color: Colors.white,fontSize: 30),),
                   ),
                   MyMap()
@@ -354,13 +511,15 @@ Stream<List<familyConvertor>> readFamily() =>
 
 class familyMemberConvertor {
   String id;
-  String familyName;
-  familyMemberConvertor({this.id = "",required this.familyName});
+  String familyName,location;
+  int battery;
+  double lng,lat;
+  familyMemberConvertor({this.id = "",required this.familyName,required this.location,required this.battery,required this.lng,required this.lat});
 
-  Map<String, dynamic> toJson() => {"id": id,"familyName":familyName};
+  Map<String, dynamic> toJson() => {"id": id,"familyName":familyName,"location":location,"battery":battery,"lng":lng,"lat":lat};
 
   static familyMemberConvertor fromJson(Map<String, dynamic> json) =>
-      familyMemberConvertor(id: json['id'],familyName: json["familyName"]);
+      familyMemberConvertor(id: json['id'],familyName: json["familyName"],location: json['location'],battery: json['battery'],lat: json["lat"],lng:json["lng"]);
 }
 
 Stream<List<familyMemberConvertor>> readFamilyMember(String id) =>
@@ -411,3 +570,31 @@ showToast(String message) async {
   await Fluttertoast.cancel();
   Fluttertoast.showToast(msg: message, fontSize: 18);
 }
+class CopyTextButton extends StatelessWidget {
+  final String textToCopy;
+
+  const CopyTextButton({Key? key, required this.textToCopy}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      child: Container(
+        decoration: BoxDecoration(
+            color:Colors.blueGrey,
+            borderRadius: BorderRadius.circular(20)
+        ),
+        child: const Padding(
+          padding: EdgeInsets.all(5.0),
+          child: Text('Copy Text',style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.w500),),
+        ),
+      ),
+      onTap: (){
+        Clipboard.setData(ClipboardData(text: textToCopy));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Text copied to clipboard')),
+        );
+      },
+    );
+  }
+}
+
