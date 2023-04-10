@@ -142,21 +142,20 @@ class _LoginPageState extends State<LoginPage> {
                                   )),
                             ),
                             onTap: () async {
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>profile()));
-                              // showDialog(
-                              //     context: context,
-                              //     barrierDismissible: false,
-                              //     builder: (context) => const Center(
-                              //       child: CircularProgressIndicator(),
-                              //     ));
-                              // try {
-                              //   await FirebaseAuth.instance.signInWithEmailAndPassword( email: emailController.text.trim().toLowerCase(), password: passwordController.text.trim());
-                              //   Navigator.pop(context);
-                              //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomePage()));
-                              // } on FirebaseException catch (e) {
-                              //   print(e);
-                              //   Utils.showSnackBar(e.message);
-                              // }
+                              showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(),
+                                  ));
+                              try {
+                                await FirebaseAuth.instance.signInWithEmailAndPassword( email: emailController.text.trim().toLowerCase(), password: passwordController.text.trim());
+                                Navigator.pop(context);
+                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MyApp()));
+                              } on FirebaseException catch (e) {
+                                print(e);
+                                Utils.showSnackBar(e.message);
+                              }
 
 
                             },

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:battery_plus/battery_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:countdown_flutter/countdown_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -34,13 +35,13 @@ class _HomePageState extends State<HomePage> {
   int _secondsRemaining = 5; // The number of seconds to count down
   bool _isDialogOpen = false;
 
-
+  final nameController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
 
-    Timer.periodic(const Duration(seconds: 100), (timer) {
+    Timer.periodic(const Duration(seconds: 10), (timer) {
       getBatteryPerentage();
 
     });
@@ -52,6 +53,11 @@ class _HomePageState extends State<HomePage> {
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   }
+  @override
+  void dispose() {
+    nameController.dispose();
+    super.dispose();
+  }
   void getBatteryPerentage() async {
     final level = await battery.batteryLevel;
     if(percentage != level){
@@ -62,8 +68,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-
-
 
   Future onSelectNotification(String payload) {
     return showDialog(
@@ -97,7 +101,7 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Column(
           children: [
-              Row(
+            Row(
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(left: 10,top: 5),
@@ -272,31 +276,248 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             const Text("Family",style: TextStyle(color: Colors.white,fontSize: 25),),
                             const Spacer(),
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.circular(20)
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(5.0),
-                                child: Text("Create",style: TextStyle(color: Colors.white,fontSize: 20),),
-                              ),
-                            ),
-                            const SizedBox(width: 5,),
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.circular(20)
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Row(
-                                  children: [
-                                    const Text(" Add",style: TextStyle(color: Colors.white,fontSize: 20),),
-                                    const Icon(Icons.add,color: Colors.red,)
-                                  ],
+                            InkWell(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                    borderRadius: BorderRadius.circular(20)
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(5.0),
+                                  child: Text("Create",style: TextStyle(color: Colors.white,fontSize: 20),),
                                 ),
                               ),
+                              onTap: (){
+                                _isDialogOpen = true;
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Scaffold(
+                                      backgroundColor: Colors.transparent,
+                                      body: Center(
+                                        child: Container(
+
+                                          height: 250,
+                                          width: 300,
+                                          decoration: BoxDecoration(
+                                            color: Colors.black.withOpacity(0.6),
+                                            borderRadius: BorderRadius.circular(20),
+                                            boxShadow: [
+                                               BoxShadow(
+                                                  blurRadius: 25.0,
+                                                  color: Colors.white.withOpacity(0.3)
+
+                                              )
+                                            ],
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(left: 15,top: 15),
+                                                child: Text("Name",style: TextStyle(color: Colors.white,fontSize: 35,fontWeight: FontWeight.w500),),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 25,vertical: 10),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white54,
+                                                    border: Border.all(color: Colors.white.withOpacity(0.8)),
+                                                    borderRadius: BorderRadius.circular(18),
+                                                  ),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.only(left: 20),
+                                                    child: TextField(
+                                                      controller: nameController,
+                                                      textInputAction: TextInputAction.next,
+                                                      decoration: const InputDecoration(
+                                                        border: InputBorder.none,
+                                                        hintText: 'Enter Family Name',
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+
+                                              Padding(
+                                                padding: const EdgeInsets.only(left: 60,right: 60),
+                                                child: Row(
+                                                  children: [
+                                                    InkWell(
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                            color: Colors.black,
+                                                            borderRadius: BorderRadius.circular(100),
+                                                            border: Border.all(color: Colors.white54)
+                                                        ),
+                                                        child: const Padding(
+                                                          padding: EdgeInsets.all(5.0),
+                                                          child: Text("Cancel",style: TextStyle(color: Colors.white,fontSize: 25,fontWeight: FontWeight.w700),),
+                                                        ),
+                                                      ),
+                                                      onTap: (){
+                                                        Navigator.pop(context);
+                                                      },
+                                                    ),
+                                                    Spacer(),
+                                                    InkWell(
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                            color: Colors.black,
+                                                            borderRadius: BorderRadius.circular(100),
+                                                            border: Border.all(color: Colors.white54)
+                                                        ),
+                                                        child: const Padding(
+                                                          padding: EdgeInsets.all(5.0),
+                                                          child: Text("Create",style: TextStyle(color: Colors.lightBlueAccent,fontSize: 25,fontWeight: FontWeight.w700),),
+                                                        ),
+                                                      ),
+                                                      onTap: ()async{
+                                                        // await FirebaseFirestore.instance.collection("users").doc(fullUserId()).collection("family").doc(nameController.text.trim()).set({"id":nameController.text.trim()});
+
+                                                        await FirebaseFirestore.instance.collection("Family").doc("${fullUserId()}${nameController.text.trim()}").set({"id":"${fullUserId()}${nameController.text.trim()}","familyName":nameController.text.trim()});
+                                                      showToast("${nameController.text.trim()}'s family created");
+                                                        Navigator.pop(context);
+                                                        },
+                                                    )
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ).then((_) {
+                                  _isDialogOpen = false;
+                                });
+                              },
+                            ),
+                            const SizedBox(width: 5,),
+                            InkWell(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                    borderRadius: BorderRadius.circular(20)
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Row(
+                                    children: [
+                                      const Text(" Add",style: TextStyle(color: Colors.white,fontSize: 20),),
+                                      const Icon(Icons.add,color: Colors.red,)
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              onTap: ()async{
+                                _isDialogOpen = true;
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Scaffold(
+                                      backgroundColor: Colors.transparent,
+                                      body: Center(
+                                        child: Container(
+
+                                          height: 250,
+                                          width: 300,
+                                          decoration: BoxDecoration(
+                                            color: Colors.black.withOpacity(0.6),
+                                            borderRadius: BorderRadius.circular(20),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                  blurRadius: 25.0,
+                                                  color: Colors.white.withOpacity(0.3)
+
+                                              )
+                                            ],
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(left: 15,top: 15),
+                                                child: Text("Add Family",style: TextStyle(color: Colors.white,fontSize: 35,fontWeight: FontWeight.w500),),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 25,vertical: 10),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white54,
+                                                    border: Border.all(color: Colors.white.withOpacity(0.8)),
+                                                    borderRadius: BorderRadius.circular(18),
+                                                  ),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.only(left: 20),
+                                                    child: TextField(
+                                                      controller: nameController,
+                                                      textInputAction: TextInputAction.next,
+                                                      decoration: const InputDecoration(
+                                                        border: InputBorder.none,
+                                                        hintText: 'Enter family token',
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+
+                                              Padding(
+                                                padding: const EdgeInsets.only(left: 60,right: 60),
+                                                child: Row(
+                                                  children: [
+                                                    InkWell(
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                            color: Colors.black,
+                                                            borderRadius: BorderRadius.circular(100),
+                                                            border: Border.all(color: Colors.white54)
+                                                        ),
+                                                        child: const Padding(
+                                                          padding: EdgeInsets.all(5.0),
+                                                          child: Text("Cancel",style: TextStyle(color: Colors.white,fontSize: 25,fontWeight: FontWeight.w700),),
+                                                        ),
+                                                      ),
+                                                      onTap: (){
+                                                        Navigator.pop(context);
+                                                      },
+                                                    ),
+                                                    Spacer(),
+                                                    InkWell(
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                            color: Colors.black,
+                                                            borderRadius: BorderRadius.circular(100),
+                                                            border: Border.all(color: Colors.white54)
+                                                        ),
+                                                        child: const Padding(
+                                                          padding: EdgeInsets.all(5.0),
+                                                          child: Text("Create",style: TextStyle(color: Colors.lightBlueAccent,fontSize: 25,fontWeight: FontWeight.w700),),
+                                                        ),
+                                                      ),
+                                                      onTap: ()async{
+                                                        final out = nameController.text.split(",");
+                                                        await FirebaseFirestore.instance.collection("users").doc(fullUserId()).collection("family").doc(out[0]).set({"familyName":out[1],"id":out[0]});
+                                                        showToast("${nameController.text.trim()}'s family created");
+                                                        Navigator.pop(context);
+                                                      },
+                                                    )
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ).then((_) {
+                                  _isDialogOpen = false;
+                                });
+                               },
                             )
                           ],
                         ),
@@ -335,13 +556,228 @@ class _HomePageState extends State<HomePage> {
                                           mainAxisAlignment: MainAxisAlignment.start,
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                             Padding(
-                                              padding: const EdgeInsets.only(left: 15,top: 5),
-                                              child: Text(
-                                                SubjectsData1.familyName,
-                                                style: const TextStyle(color: Colors.white, fontSize: 30),
-                                              ),
+                                             InkWell(
+                                               child: Row(
+                                                 children: [
+                                                   Padding(
+                                                    padding: const EdgeInsets.only(left: 15,top: 5),
+                                                    child: Text(
+                                                      SubjectsData1.familyName,
+                                                      style: const TextStyle(color: Colors.white, fontSize: 30),
+                                                    ),
                                             ),
+                                                   Spacer(),
+                                                   InkWell(
+                                                     child: Padding(
+                                                       padding: const EdgeInsets.only(right: 20,top: 10,bottom: 3),
+                                                       child: Container(
+                                                         decoration: BoxDecoration(
+                                                             color: Colors.blue,
+                                                             borderRadius: BorderRadius.circular(20)
+                                                         ),
+                                                         child: const Padding(
+                                                           padding: EdgeInsets.all(5.0),
+                                                           child: Text("Create Member",style: TextStyle(color: Colors.white,fontSize: 17),),
+                                                         ),
+                                                       ),
+                                                     ),
+                                                     onTap: (){
+                                                       _isDialogOpen = true;
+                                                       showDialog(
+                                                         context: context,
+                                                         builder: (BuildContext context) {
+                                                           return Scaffold(
+                                                             backgroundColor: Colors.transparent,
+                                                             body: Center(
+                                                               child: Container(
+
+                                                                 height: 250,
+                                                                 width: 300,
+                                                                 decoration: BoxDecoration(
+                                                                   color: Colors.black.withOpacity(0.6),
+                                                                   borderRadius: BorderRadius.circular(20),
+                                                                   boxShadow: [
+                                                                     BoxShadow(
+                                                                         blurRadius: 25.0,
+                                                                         color: Colors.white.withOpacity(0.3)
+
+                                                                     )
+                                                                   ],
+                                                                 ),
+                                                                 child: Column(
+                                                                   mainAxisAlignment: MainAxisAlignment.start,
+                                                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                                                   children: [
+                                                                     const Padding(
+                                                                       padding:  EdgeInsets.only(left: 15,top: 15),
+                                                                       child: Text("Enter Token",style: TextStyle(color: Colors.white,fontSize: 35,fontWeight: FontWeight.w500),),
+                                                                     ),
+                                                                     Padding(
+                                                                       padding: const EdgeInsets.symmetric(horizontal: 25,vertical: 10),
+                                                                       child: Container(
+                                                                         decoration: BoxDecoration(
+                                                                           color: Colors.white54,
+                                                                           border: Border.all(color: Colors.white.withOpacity(0.8)),
+                                                                           borderRadius: BorderRadius.circular(18),
+                                                                         ),
+                                                                         child: Padding(
+                                                                           padding: const EdgeInsets.only(left: 20),
+                                                                           child: TextField(
+                                                                             controller: nameController,
+                                                                             textInputAction: TextInputAction.next,
+                                                                             decoration: const InputDecoration(
+                                                                               border: InputBorder.none,
+                                                                               hintText: 'Enter Token here',
+                                                                             ),
+                                                                           ),
+                                                                         ),
+                                                                       ),
+                                                                     ),
+
+                                                                     Padding(
+                                                                       padding: const EdgeInsets.only(left: 60,right: 60),
+                                                                       child: Row(
+                                                                         children: [
+                                                                           InkWell(
+                                                                             child: Container(
+                                                                               decoration: BoxDecoration(
+                                                                                   color: Colors.black,
+                                                                                   borderRadius: BorderRadius.circular(100),
+                                                                                   border: Border.all(color: Colors.white54)
+                                                                               ),
+                                                                               child: const Padding(
+                                                                                 padding: EdgeInsets.all(5.0),
+                                                                                 child: Text("Cancel",style: TextStyle(color: Colors.white,fontSize: 25,fontWeight: FontWeight.w700),),
+                                                                               ),
+                                                                             ),
+                                                                             onTap: (){
+                                                                               Navigator.pop(context);
+                                                                             },
+                                                                           ),
+                                                                           Spacer(),
+                                                                           InkWell(
+                                                                             child: Container(
+                                                                               decoration: BoxDecoration(
+                                                                                   color: Colors.black,
+                                                                                   borderRadius: BorderRadius.circular(100),
+                                                                                   border: Border.all(color: Colors.white54)
+                                                                               ),
+                                                                               child: const Padding(
+                                                                                 padding: EdgeInsets.all(5.0),
+                                                                                 child: Text("Create",style: TextStyle(color: Colors.lightBlueAccent,fontSize: 25,fontWeight: FontWeight.w700),),
+                                                                               ),
+                                                                             ),
+                                                                             onTap: ()async{
+                                                                               await FirebaseFirestore.instance.collection("users").doc(fullUserId()).collection("family").doc(nameController.text.trim()).set({"id":nameController.text.trim()});
+
+                                                                               await FirebaseFirestore.instance.collection("Family").doc("${fullUserId()}${nameController.text.trim()}").set({"id":"${fullUserId()}${nameController.text.trim()}","familyName":nameController.text.trim()});
+                                                                               showToast("${nameController.text.trim()}'s family created");
+                                                                               Navigator.pop(context);
+                                                                             },
+                                                                           )
+                                                                         ],
+                                                                       ),
+                                                                     )
+                                                                   ],
+                                                                 ),
+                                                               ),
+                                                             ),
+                                                           );
+                                                         },
+                                                       ).then((_) {
+                                                         _isDialogOpen = false;
+                                                       });
+                                                     },
+                                                   ),
+                                                 ],
+                                               ),
+                                               onLongPress: () async {
+
+                                                 _isDialogOpen = true;
+                                                 showDialog(
+                                                   context: context,
+                                                   builder: (BuildContext context) {
+                                                     return Scaffold(
+                                                       backgroundColor: Colors.transparent,
+                                                       body: Center(
+                                                         child: Container(
+                                                           height: 100,
+                                                           width: 300,
+                                                           decoration: BoxDecoration(
+                                                             color: Colors.black.withOpacity(0.6),
+                                                             borderRadius: BorderRadius.circular(20),
+                                                             boxShadow: [
+                                                               BoxShadow(
+                                                                   blurRadius: 25.0,
+                                                                   color: Colors.white.withOpacity(0.3)
+
+                                                               )
+                                                             ],
+                                                           ),
+                                                           child: Column(
+                                                             mainAxisAlignment: MainAxisAlignment.start,
+                                                             crossAxisAlignment: CrossAxisAlignment.start,
+                                                             children: [
+                                                               const Padding(
+                                                                 padding:  EdgeInsets.only(left: 15,top: 15),
+                                                                 child: Text("Do you want delete family",style: TextStyle(color: Colors.white,fontSize: 25,fontWeight: FontWeight.w500),),
+                                                               ),
+
+
+                                                               Padding(
+                                                                 padding: const EdgeInsets.only(left: 60,right: 60,top: 8),
+                                                                 child: Row(
+                                                                   children: [
+                                                                     InkWell(
+                                                                       child: Container(
+                                                                         decoration: BoxDecoration(
+                                                                             color: Colors.black,
+                                                                             borderRadius: BorderRadius.circular(100),
+                                                                             border: Border.all(color: Colors.white54)
+                                                                         ),
+                                                                         child: const Padding(
+                                                                           padding: EdgeInsets.all(5.0),
+                                                                           child: Text("Cancel",style: TextStyle(color: Colors.white,fontSize: 25,fontWeight: FontWeight.w700),),
+                                                                         ),
+                                                                       ),
+                                                                       onTap: (){
+                                                                         Navigator.pop(context);
+                                                                       },
+                                                                     ),
+                                                                     Spacer(),
+                                                                     InkWell(
+                                                                       child: Container(
+                                                                         decoration: BoxDecoration(
+                                                                             color: Colors.black,
+                                                                             borderRadius: BorderRadius.circular(100),
+                                                                             border: Border.all(color: Colors.white54)
+                                                                         ),
+                                                                         child: const Padding(
+                                                                           padding: EdgeInsets.all(5.0),
+                                                                           child: Text("Delete",style: TextStyle(color: Colors.lightBlueAccent,fontSize: 25,fontWeight: FontWeight.w700),),
+                                                                         ),
+                                                                       ),
+                                                                       onTap: ()async{
+                                                                         await FirebaseFirestore.instance.collection("Family").doc(SubjectsData1.id).delete();
+                                                                         showToast("${nameController.text.trim()}'s family created");
+                                                                         Navigator.pop(context);
+                                                                       },
+                                                                     )
+                                                                   ],
+                                                                 ),
+                                                               )
+                                                             ],
+                                                           ),
+                                                         ),
+                                                       ),
+                                                     );
+                                                   },
+                                                 ).then((_) {
+                                                   _isDialogOpen = false;
+                                                 });
+
+                                               },
+                                             ),
                                             Padding(
                                               padding: const EdgeInsets.all(8.0),
                                               child: StreamBuilder<List<familyMemberConvertor>>(
@@ -460,7 +896,7 @@ class _HomePageState extends State<HomePage> {
                                                   }),
                                             ),
                                             Center(
-                                              child: CopyTextButton(textToCopy: SubjectsData1.id),
+                                              child: CopyTextButton(textToCopy: "${SubjectsData1.id},${SubjectsData1.familyName}"),
                                             ),
                                             const SizedBox(height: 10,)
                                           ],
@@ -585,14 +1021,11 @@ class CopyTextButton extends StatelessWidget {
         ),
         child: const Padding(
           padding: EdgeInsets.all(5.0),
-          child: Text('Copy Text',style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.w500),),
+          child: Text('Copy Token',style: TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.w500),),
         ),
       ),
       onTap: (){
-        Clipboard.setData(ClipboardData(text: textToCopy));
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Text copied to clipboard')),
-        );
+        showToast(textToCopy);
       },
     );
   }

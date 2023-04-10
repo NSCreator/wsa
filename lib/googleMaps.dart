@@ -118,22 +118,210 @@ class _MyMapWidgetState extends State<MyMapWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GoogleMap(
-        onMapCreated: (controller) {
-          _mapController = controller;
-        },
-        initialCameraPosition: CameraPosition(
-          target: _sourceLocation,
-          zoom: 14.0,
-        ),
-        markers: Set<Marker>.of([
-          Marker(
-            markerId: MarkerId("source"),
-            position: _sourceLocation,
-            infoWindow: InfoWindow(title: "Source"),
+      body: Stack(
+        children: <Widget>[
+          Positioned(
+
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: GoogleMap(
+              padding: EdgeInsets.only(
+                bottom: 120),
+              myLocationEnabled: true,
+              myLocationButtonEnabled: true,
+              compassEnabled: true,
+                  onMapCreated: (controller) {
+                    _mapController = controller;
+                  },
+                  initialCameraPosition: CameraPosition(
+                    target: _sourceLocation,
+                    zoom: 14.0,
+                  ),
+                  markers: Set<Marker>.of([
+                    Marker(
+                      markerId: MarkerId("source"),
+                      position: _sourceLocation,
+                      infoWindow: InfoWindow(title: "Source"),
+                    ),
+                  ]),
+                ),
           ),
-        ]),
+          DraggableScrollableSheet(
+
+            initialChildSize: .14,
+            minChildSize: .14,
+            maxChildSize: .6,
+
+            builder: (BuildContext context, ScrollController scrollController){
+              return Container(
+                decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.3),
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(40),
+                    topLeft: Radius.circular(40),
+                  )
+                ),
+                child: ListView.separated(
+                  physics: BouncingScrollPhysics(),
+                    controller: scrollController,
+                    itemCount: 5,
+                    itemBuilder: (BuildContext context, int index){
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 10,right: 10),
+                        child: Row(
+                          children: [
+                            Container(
+                              height:50,
+                              width: 50,
+                              decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(25)
+                              ),
+                            ),
+                            Column(
+                              children: [
+                                Text("13/03/2002",
+                                  style: TextStyle(
+                                    fontSize: 20
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  separatorBuilder: (BuildContext context, int index) => const Divider(thickness: 1.5,),
+                    ),
+              );
+            },
+          )
+        ],
       ),
-    );
+      // body: Column(
+      //   children: [
+      //     GoogleMap(
+      //       onMapCreated: (controller) {
+      //         _mapController = controller;
+      //       },
+      //       initialCameraPosition: CameraPosition(
+      //         target: _sourceLocation,
+      //         zoom: 14.0,
+      //       ),
+      //       markers: Set<Marker>.of([
+      //         Marker(
+      //           markerId: MarkerId("source"),
+      //           position: _sourceLocation,
+      //           infoWindow: InfoWindow(title: "Source"),
+      //         ),
+      //       ]),
+      //     ),
+      //     bottomDetailsSheet()
+      //   ],
+      // ),
+        );
   }
+
+}
+  void _GoogleMapBottomSheet(BuildContext context) =>
+      showModalBottomSheet(
+        backgroundColor: Colors.black54,
+        context: context,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(30),
+            )),
+        builder: (context) =>
+            DraggableScrollableSheet(
+                initialChildSize: 0.4,
+                maxChildSize: 0.55,
+                minChildSize: 0.32,
+                expand: false,
+                builder: (context, scrollController) {
+                  return SingleChildScrollView(
+                    controller: scrollController,
+                    child: Stack(
+                      alignment: AlignmentDirectional.topCenter,
+                      clipBehavior: Clip.none,
+                      children: [
+                        Positioned(
+                          top: -15,
+                          child: Container(
+                            width: 60,
+                            height: 7,
+                            margin: const EdgeInsets.only(bottom: 20),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                              ]),
+                        )
+                      ],
+                    ),
+                  );
+                }
+            ),
+      );
+
+Widget bottomDetailsSheet() {
+  return DraggableScrollableSheet(
+    initialChildSize: .2,
+    minChildSize: .1,
+    maxChildSize: .6,
+
+    builder: (BuildContext context, ScrollController scrollController) {
+      return Container(
+        color: Colors.lightGreen[100],
+        child: ListView(
+          controller: scrollController,
+          shrinkWrap: true,
+          children: [
+            ListTile(
+              title: Text(
+                "NAME",
+              ),
+              subtitle: Text(
+                "animalNames[selectedTile]",
+              ),
+            ),
+            ListTile(
+              title: Text(
+                "FAMILY",
+              ),
+              subtitle: Text(
+               " animalFamily[selectedTile]",
+              ),
+            ),
+            ListTile(
+              title: Text(
+                "LIFESPAN",
+              ),
+              subtitle: Text(
+                "animalLifeSpan[selectedTile]",
+              ),
+            ),
+            ListTile(
+              title: Text(
+                "WEIGHT",
+              ),
+              subtitle: Text(
+                "animalWeight[selectedTile]",
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
