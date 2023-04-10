@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -60,36 +62,29 @@ class _MyMapState extends State<MyMap> {
   }
   @override
   Widget build(BuildContext context) {
-    return currentLocation==null?CircularProgressIndicator():
-    Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        height: 300,
-        width: double.infinity,
-        child: GoogleMap(
-          initialCameraPosition: CameraPosition(
-            target: LatLng(currentLocation!.latitude!,currentLocation!.longitude!),
-            zoom: 14.5,
-          ),
-          polylines: {
-            Polyline(
-              polylineId: const PolylineId("route"),
-              points:polylineCoordinates,
-            )
-          },
-          markers: {
-            Marker(markerId: MarkerId("My Location"),
-                position: LatLng(currentLocation!.latitude!,currentLocation!.longitude!),
-            ),
-            Marker(markerId: MarkerId("source"),
-                position: sourceLocation
-            ),
-            Marker(markerId: MarkerId("destination"),
-                position: destination
-            )
-          },
-        ),
+    return currentLocation==null?Center(child: SizedBox(height:50,width:50,child: CircularProgressIndicator())):
+    GoogleMap(
+      initialCameraPosition: CameraPosition(
+        target: LatLng(currentLocation!.latitude!,currentLocation!.longitude!),
+        zoom: 14.5,
       ),
+      polylines: {
+        Polyline(
+          polylineId: const PolylineId("route"),
+          points:polylineCoordinates,
+        )
+      },
+      markers: {
+        Marker(markerId: MarkerId("My Location"),
+            position: LatLng(currentLocation!.latitude!,currentLocation!.longitude!),
+        ),
+        Marker(markerId: MarkerId("source"),
+            position: sourceLocation
+        ),
+        Marker(markerId: MarkerId("destination"),
+            position: destination
+        )
+      },
     );
   }
 }
@@ -98,8 +93,8 @@ class _MyMapState extends State<MyMap> {
 class MyMapWidget extends StatefulWidget {
   final double lat;
   final double lng;
-
-  MyMapWidget({required this.lat, required this.lng});
+final String name;
+  MyMapWidget({required this.lat, required this.lng,required this.name});
 
   @override
   _MyMapWidgetState createState() => _MyMapWidgetState();
@@ -139,13 +134,13 @@ class _MyMapWidgetState extends State<MyMapWidget> {
                     target: _sourceLocation,
                     zoom: 14.0,
                   ),
-                  markers: Set<Marker>.of([
+                  markers: <Marker>{
                     Marker(
                       markerId: MarkerId("source"),
                       position: _sourceLocation,
                       infoWindow: InfoWindow(title: "Source"),
                     ),
-                  ]),
+                  },
                 ),
           ),
           DraggableScrollableSheet(
@@ -157,44 +152,70 @@ class _MyMapWidgetState extends State<MyMapWidget> {
             builder: (BuildContext context, ScrollController scrollController){
               return Container(
                 decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withOpacity(0.6),
                   borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(40),
-                    topLeft: Radius.circular(40),
+                    topRight: Radius.circular(30),
+                    topLeft: Radius.circular(30),
                   )
                 ),
-                child: ListView.separated(
-                  physics: BouncingScrollPhysics(),
-                    controller: scrollController,
-                    itemCount: 5,
-                    itemBuilder: (BuildContext context, int index){
-                      return Padding(
-                        padding: const EdgeInsets.only(left: 10,right: 10),
-                        child: Row(
-                          children: [
-                            Container(
-                              height:50,
-                              width: 50,
-                              decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.circular(25)
-                              ),
-                            ),
-                            Column(
-                              children: [
-                                Text("13/03/2002",
-                                  style: TextStyle(
-                                    fontSize: 20
+                child: SingleChildScrollView(
+                  physics: NeverScrollableScrollPhysics(),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15,top: 10),
+                        child: Text("See More About ${widget.name}",style: TextStyle(color: Colors.orangeAccent,fontSize: 19),),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10,top: 5),
+                        child: Text("Google Maps History",style: TextStyle(color: Colors.white,fontSize: 25),),
+                      ),
+                      ListView.separated(
+                        physics: BouncingScrollPhysics(),
+                          controller: scrollController,
+                          itemCount: 1,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index){
+                            return Padding(
+                              padding: const EdgeInsets.only(left: 10,right: 10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    height:50,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(25)
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  separatorBuilder: (BuildContext context, int index) => const Divider(thickness: 1.5,),
-                    ),
+                                  SizedBox(width: 10,),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text("Sujith Nimmala",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w500,color: Colors.white),),
+                                      Text("Place",style: TextStyle(fontSize: 15,fontWeight: FontWeight.w500,color: Colors.white),),
+
+                                      Text("13/03/2002",
+                                        style: TextStyle(
+                                          fontSize: 16,color: Colors.white
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        separatorBuilder: (BuildContext context, int index) => const Divider(thickness: 1.5,),
+                          ),
+                    ],
+                  ),
+                ),
               );
             },
           )
@@ -224,104 +245,4 @@ class _MyMapWidgetState extends State<MyMapWidget> {
         );
   }
 
-}
-  void _GoogleMapBottomSheet(BuildContext context) =>
-      showModalBottomSheet(
-        backgroundColor: Colors.black54,
-        context: context,
-        isScrollControlled: true,
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(30),
-            )),
-        builder: (context) =>
-            DraggableScrollableSheet(
-                initialChildSize: 0.4,
-                maxChildSize: 0.55,
-                minChildSize: 0.32,
-                expand: false,
-                builder: (context, scrollController) {
-                  return SingleChildScrollView(
-                    controller: scrollController,
-                    child: Stack(
-                      alignment: AlignmentDirectional.topCenter,
-                      clipBehavior: Clip.none,
-                      children: [
-                        Positioned(
-                          top: -15,
-                          child: Container(
-                            width: 60,
-                            height: 7,
-                            margin: const EdgeInsets.only(bottom: 20),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                              ]),
-                        )
-                      ],
-                    ),
-                  );
-                }
-            ),
-      );
-
-Widget bottomDetailsSheet() {
-  return DraggableScrollableSheet(
-    initialChildSize: .2,
-    minChildSize: .1,
-    maxChildSize: .6,
-
-    builder: (BuildContext context, ScrollController scrollController) {
-      return Container(
-        color: Colors.lightGreen[100],
-        child: ListView(
-          controller: scrollController,
-          shrinkWrap: true,
-          children: [
-            ListTile(
-              title: Text(
-                "NAME",
-              ),
-              subtitle: Text(
-                "animalNames[selectedTile]",
-              ),
-            ),
-            ListTile(
-              title: Text(
-                "FAMILY",
-              ),
-              subtitle: Text(
-               " animalFamily[selectedTile]",
-              ),
-            ),
-            ListTile(
-              title: Text(
-                "LIFESPAN",
-              ),
-              subtitle: Text(
-                "animalLifeSpan[selectedTile]",
-              ),
-            ),
-            ListTile(
-              title: Text(
-                "WEIGHT",
-              ),
-              subtitle: Text(
-                "animalWeight[selectedTile]",
-              ),
-            ),
-          ],
-        ),
-      );
-    },
-  );
 }

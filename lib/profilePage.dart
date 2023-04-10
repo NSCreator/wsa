@@ -1,7 +1,10 @@
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:wsa/homePage.dart';
+import 'package:wsa/settings.dart';
 
 class profile extends StatefulWidget {
   const profile({Key? key}) : super(key: key);
@@ -14,10 +17,17 @@ class _profileState extends State<profile> {
 
   final FirebaseStorage storage = FirebaseStorage.instance;
 
-  final NameController = TextEditingController();
-  final DescriptionController = TextEditingController();
   final PhotoUrlController = TextEditingController();
-  final LinkController = TextEditingController();
+  final NameController = TextEditingController();
+  final AgeController = TextEditingController();
+  final PhoneNumberController = TextEditingController();
+  final EmailController = TextEditingController();
+  final FatherNameController = TextEditingController();
+  final AddressController = TextEditingController();
+  final FatherPhoneNumberController = TextEditingController();
+  final FatherEmailController = TextEditingController();
+  final CustomSOSNumbersController = TextEditingController();
+
 
 
   @override
@@ -27,10 +37,16 @@ class _profileState extends State<profile> {
 
   @override
   void dispose() {
-    NameController.dispose();
-    DescriptionController.dispose();
     PhotoUrlController.dispose();
-    LinkController.dispose();
+    NameController.dispose();
+    EmailController.dispose();
+    AgeController.dispose();
+    PhoneNumberController.dispose();
+    FatherNameController.dispose();
+    FatherPhoneNumberController.dispose();
+    FatherEmailController.dispose();
+    CustomSOSNumbersController.dispose();
+    AddressController.dispose();
     super.dispose();
   }
 
@@ -105,7 +121,7 @@ class _profileState extends State<profile> {
                                       padding: const EdgeInsets.only(left: 20),
                                       child: TextFormField(
                                         //obscureText: true,
-                                        controller: NameController,
+                                        controller: AgeController,
                                         textInputAction: TextInputAction.next,
                                         decoration: InputDecoration(
                                           border: InputBorder.none,
@@ -143,7 +159,7 @@ class _profileState extends State<profile> {
                                       padding: const EdgeInsets.only(left: 20),
                                       child: TextFormField(
                                         //obscureText: true,
-                                        controller: NameController,
+                                        controller: PhoneNumberController,
                                         textInputAction: TextInputAction.next,
                                         decoration: InputDecoration(
                                           border: InputBorder.none,
@@ -178,7 +194,7 @@ class _profileState extends State<profile> {
                             padding: const EdgeInsets.only(left: 20),
                             child: TextFormField(
                               //obscureText: true,
-                              controller: NameController,
+                              controller: EmailController,
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
@@ -188,7 +204,39 @@ class _profileState extends State<profile> {
                           ),
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15, top: 8, bottom: 5),
+                        child: Text(
+                          "Address",
+                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500, color: Colors.white),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10, bottom: 3, right: 10),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            border: Border.all(color: Colors.white),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 20),
+                            child: TextFormField(
+                              keyboardType: TextInputType.multiline,
+                              minLines: 1,//Normal textInputField will be displayed
+                              maxLines: 5,// when user presses enter it will adapt to it
 
+                              //obscureText: true,
+                              controller: FatherNameController,
+                              textInputAction: TextInputAction.next,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Enter Address',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(left: 15, top: 8, bottom: 5),
                         child: Text(
@@ -208,7 +256,7 @@ class _profileState extends State<profile> {
                             padding: const EdgeInsets.only(left: 20),
                             child: TextFormField(
                               //obscureText: true,
-                              controller: NameController,
+                              controller: FatherNameController,
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
@@ -237,7 +285,7 @@ class _profileState extends State<profile> {
                             padding: const EdgeInsets.only(left: 20),
                             child: TextFormField(
                               //obscureText: true,
-                              controller: NameController,
+                              controller: FatherPhoneNumberController,
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
@@ -245,6 +293,96 @@ class _profileState extends State<profile> {
                               ),
                             ),
                           ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15, top: 8, bottom: 5),
+                        child: Text(
+                          "Father Email",
+                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500, color: Colors.white),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10, bottom: 3, right: 10),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            border: Border.all(color: Colors.white),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 20),
+                            child: TextFormField(
+                              //obscureText: true,
+                              controller: FatherEmailController,
+                              textInputAction: TextInputAction.next,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'Enter Father Email Address',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Container(
+
+                          decoration: BoxDecoration(
+                              color: Colors.blue,
+                            borderRadius: BorderRadius.circular(10)
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Flexible(
+                                    flex:1,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        "SOS\nNumbers",
+                                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    flex: 3,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 3, bottom: 3, right: 3,top: 3),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[200],
+                                          border: Border.all(color: Colors.white),
+                                          borderRadius: BorderRadius.circular(14),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(left: 20),
+                                          child: TextFormField(
+                                            //obscureText: true,
+                                            controller: CustomSOSNumbersController,
+                                            textInputAction: TextInputAction.next,
+                                            decoration: InputDecoration(
+                                              border: InputBorder.none,
+                                              hintText: 'Enter Custom SOS Numbers with " , "',
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15, top: 8, bottom: 5),
+                        child: Text(
+                          "Note : Enter SOS Numbers with separating with ' , '",
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.red),
                         ),
                       ),
                       Row(
@@ -268,7 +406,25 @@ class _profileState extends State<profile> {
                                   ),
                                 ),
                               ),
-                              onTap: (){
+                              onTap: ()async{
+                                await FirebaseFirestore.instance.collection("users").doc(fullUserId()).set(
+                                    {
+                                     "id":fullUserId(),
+                                     "name": NameController.text.trim(),
+                                      "age":AgeController.text.trim(),
+                                      "phoneNumber":PhoneNumberController.text.trim(),
+                                      "email":EmailController.text.trim(),
+                                      "fatherName":FatherNameController.text.trim(),
+                                      "fatherphoneNumber":FatherPhoneNumberController.text.trim(),
+                                      "fatheremail":FatherEmailController.text.trim(),
+                                      "CustomSOSNumbers":CustomSOSNumbersController.text.trim(),
+                                      "address":AddressController.text.trim(),
+                                      "battery":0,
+                                      "location":"",
+                                      "lat":0,
+                                      "lng":0,
+                                      "lastUpdate":""
+                                    });
                                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomePage()));
                               },
                             ),
