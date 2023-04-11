@@ -510,7 +510,7 @@ class _HomePageState extends State<HomePage> {
                                                         ),
                                                       ),
                                                       onTap: () async {
-                                                        // await FirebaseFirestore.instance.collection("users").doc(fullUserId()).collection("family").doc(nameController.text.trim()).set({"id":nameController.text.trim()});
+                                                        await FirebaseFirestore.instance.collection("users").doc(fullUserId()).collection("family").doc("${fullUserId()}${nameController.text.trim()}").set({"id":"${fullUserId()}${nameController.text.trim()}","familyName":nameController.text.trim()});
 
                                                         await FirebaseFirestore
                                                             .instance
@@ -525,20 +525,6 @@ class _HomePageState extends State<HomePage> {
                                                               nameController
                                                                   .text
                                                                   .trim()
-                                                        });
-                                                        await FirebaseFirestore
-                                                            .instance
-                                                            .collection(
-                                                            "users")
-                                                            .doc(
-                                                            fullUserId())
-                                                            .set({
-                                                          "id":
-                                                          "${fullUserId()}${nameController.text.trim()}",
-                                                          "familyName":
-                                                          nameController
-                                                              .text
-                                                              .trim()
                                                         });
                                                         showToast(
                                                             "${nameController.text.trim()}'s family created");
@@ -832,7 +818,7 @@ class _HomePageState extends State<HomePage> {
                                                               EdgeInsets.all(
                                                                   5.0),
                                                           child: Text(
-                                                            "Create Member",
+                                                            "Add Member",
                                                             style: TextStyle(
                                                                 color: Colors
                                                                     .white,
@@ -931,7 +917,7 @@ class _HomePageState extends State<HomePage> {
                                                                             decoration:
                                                                                 const InputDecoration(
                                                                               border: InputBorder.none,
-                                                                              hintText: 'Enter Token here',
+                                                                              hintText: 'Enter Member Token here',
                                                                             ),
                                                                           ),
                                                                         ),
@@ -979,15 +965,15 @@ class _HomePageState extends State<HomePage> {
                                                                             ),
                                                                             onTap:
                                                                                 () async {
-                                                                              // await FirebaseFirestore.instance.collection("users").doc(fullUserId()).collection("family").doc(nameController.text.trim()).set({
-                                                                              //   "id": nameController.text.trim()
-                                                                              // });
-
-                                                                              await FirebaseFirestore.instance.collection("Family").doc("${fullUserId()}${nameController.text.trim()}").set({
-                                                                                "id": "${fullUserId()}${nameController.text.trim()}",
-                                                                                "familyName": nameController.text.trim()
+                                                                                  // await FirebaseFirestore.instance.collection("users").doc(nameController.text.trim()).collection("family").doc().set({
+                                                                                  //   "id": nameController.text.trim(),
+                                                                                  //   "userId": nameController.text.trim()
+                                                                                  // });
+                                                                              await FirebaseFirestore.instance.collection("Family").doc(SubjectsData1.id).collection("members").doc(nameController.text.trim()).set({
+                                                                                "id": nameController.text.trim(),
+                                                                                "userId": nameController.text.trim()
                                                                               });
-                                                                              showToast("${nameController.text.trim()}'s family created");
+                                                                              showToast("${nameController.text.trim()}'s member Added");
                                                                               Navigator.pop(context);
                                                                             },
                                                                           )
