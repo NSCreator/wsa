@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables
+
 import 'dart:async';
 import 'dart:io';
 
@@ -44,7 +46,7 @@ class _HomePageState extends State<HomePage> {
       getBatteryPerentage();
     });
     var initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        const AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -74,7 +76,7 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (_) {
         return AlertDialog(
-          title: Text("Payload"),
+          title: const Text("Payload"),
           content: Text("Payload : $payload"),
         );
       },
@@ -254,7 +256,7 @@ class _HomePageState extends State<HomePage> {
                                                 seconds: _secondsRemaining),
                                             onFinish: () {
                                               _showNotification(
-                                                  "SoS button was pressed by Sujithnimmala");
+                                                  "SoS button was pressed by ${fullUserId().split("@")[0]}");
                                               Navigator.of(context).pop();
                                             },
                                             builder: (BuildContext ctx,
@@ -396,8 +398,8 @@ class _HomePageState extends State<HomePage> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
+                                              const Padding(
+                                                padding: EdgeInsets.only(
                                                     left: 15, top: 15),
                                                 child: Text(
                                                   "Name",
@@ -479,7 +481,7 @@ class _HomePageState extends State<HomePage> {
                                                         Navigator.pop(context);
                                                       },
                                                     ),
-                                                    Spacer(),
+                                                    const Spacer(),
                                                     InkWell(
                                                       child: Container(
                                                         decoration: BoxDecoration(
@@ -524,6 +526,20 @@ class _HomePageState extends State<HomePage> {
                                                                   .text
                                                                   .trim()
                                                         });
+                                                        await FirebaseFirestore
+                                                            .instance
+                                                            .collection(
+                                                            "users")
+                                                            .doc(
+                                                            fullUserId())
+                                                            .set({
+                                                          "id":
+                                                          "${fullUserId()}${nameController.text.trim()}",
+                                                          "familyName":
+                                                          nameController
+                                                              .text
+                                                              .trim()
+                                                        });
                                                         showToast(
                                                             "${nameController.text.trim()}'s family created");
                                                         Navigator.pop(context);
@@ -554,13 +570,13 @@ class _HomePageState extends State<HomePage> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(5.0),
                                   child: Row(
-                                    children: [
-                                      const Text(
+                                    children: const[
+                                       Text(
                                         " Add",
                                         style: TextStyle(
                                             color: Colors.white, fontSize: 20),
                                       ),
-                                      const Icon(
+                                       Icon(
                                         Icons.add,
                                         color: Colors.red,
                                       )
@@ -597,8 +613,8 @@ class _HomePageState extends State<HomePage> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
+                                              const Padding(
+                                                padding: EdgeInsets.only(
                                                     left: 15, top: 15),
                                                 child: Text(
                                                   "Add Family",
@@ -680,7 +696,7 @@ class _HomePageState extends State<HomePage> {
                                                         Navigator.pop(context);
                                                       },
                                                     ),
-                                                    Spacer(),
+                                                    const Spacer(),
                                                     InkWell(
                                                       child: Container(
                                                         decoration: BoxDecoration(
@@ -796,7 +812,7 @@ class _HomePageState extends State<HomePage> {
                                                           fontSize: 30),
                                                     ),
                                                   ),
-                                                  Spacer(),
+                                                  const Spacer(),
                                                   InkWell(
                                                     child: Padding(
                                                       padding:
@@ -948,7 +964,7 @@ class _HomePageState extends State<HomePage> {
                                                                               Navigator.pop(context);
                                                                             },
                                                                           ),
-                                                                          Spacer(),
+                                                                          const Spacer(),
                                                                           InkWell(
                                                                             child:
                                                                                 Container(
@@ -963,9 +979,9 @@ class _HomePageState extends State<HomePage> {
                                                                             ),
                                                                             onTap:
                                                                                 () async {
-                                                                              await FirebaseFirestore.instance.collection("users").doc(fullUserId()).collection("family").doc(nameController.text.trim()).set({
-                                                                                "id": nameController.text.trim()
-                                                                              });
+                                                                              // await FirebaseFirestore.instance.collection("users").doc(fullUserId()).collection("family").doc(nameController.text.trim()).set({
+                                                                              //   "id": nameController.text.trim()
+                                                                              // });
 
                                                                               await FirebaseFirestore.instance.collection("Family").doc("${fullUserId()}${nameController.text.trim()}").set({
                                                                                 "id": "${fullUserId()}${nameController.text.trim()}",
@@ -1089,7 +1105,7 @@ class _HomePageState extends State<HomePage> {
                                                                             context);
                                                                       },
                                                                     ),
-                                                                    Spacer(),
+                                                                    const Spacer(),
                                                                     InkWell(
                                                                       child:
                                                                           Container(
@@ -1387,7 +1403,7 @@ class _HomePageState extends State<HomePage> {
                       height: 200,
                       width: double.infinity,
                       child: ClipRRect(
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(30),
                           topRight: Radius.circular(30),
                           bottomRight: Radius.circular(30),
@@ -1420,7 +1436,7 @@ class familyConvertor {
 }
 
 Stream<List<familyConvertor>> readFamily() => FirebaseFirestore.instance
-    .collection('Family')
+    .collection('users').doc(fullUserId()).collection("family")
     .snapshots()
     .map((snapshot) => snapshot.docs
         .map((doc) => familyConvertor.fromJson(doc.data()))
@@ -1519,6 +1535,7 @@ class CopyTextButton extends StatelessWidget {
         ),
       ),
       onTap: () {
+        Clipboard.setData(ClipboardData(text: textToCopy));
         showToast(textToCopy);
       },
     );

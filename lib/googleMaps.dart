@@ -144,11 +144,9 @@ class _MyMapWidgetState extends State<MyMapWidget> {
                 ),
           ),
           DraggableScrollableSheet(
-
             initialChildSize: .14,
             minChildSize: .14,
             maxChildSize: .6,
-
             builder: (BuildContext context, ScrollController scrollController){
               return Container(
                 decoration: BoxDecoration(
