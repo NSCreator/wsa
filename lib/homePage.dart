@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'dart:async';
 import 'dart:io';
@@ -145,6 +145,7 @@ class _HomePageState extends State<HomePage> {
             ),
             Expanded(
                 child: SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,27 +156,58 @@ class _HomePageState extends State<HomePage> {
                       width: double.infinity,
                       decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(20)),
+                          borderRadius: BorderRadius.circular(5)),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
                           children: [
-                            const Text(
-                              "Smart Band",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 25),
+                            Flexible(
+                              flex: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 5),
+                                child: Container(
+                                  height: 40,width: 40,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                      borderRadius: BorderRadius.circular(15)
+                                  ),
+                                  child: Image.asset("assets/th.jpg"),
+                                ),
+                              ),
                             ),
-                            const Spacer(),
-                            if (false)
-                              const Text(
-                                "Not Conected",
-                                style: TextStyle(color: Colors.red),
-                              )
-                            else
-                              const Text(
-                                "Conected",
-                                style: TextStyle(color: Colors.greenAccent),
-                              )
+                            Flexible(
+                              flex: 5,
+                              child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        "Smart Band",
+                                        style:
+                                            TextStyle(color: Colors.white, fontSize: 25),
+                                      ),
+                                      const Spacer(),
+                                      if (false)
+                                        const Text(
+                                          "Not Conected",
+                                          style: TextStyle(color: Colors.red),
+                                        )
+                                      else
+                                        const Text(
+                                          "Conected",
+                                          style: TextStyle(color: Colors.greenAccent),
+                                        )
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 10),
+                                    child: Text("Last Connected : Today",style: TextStyle(color: Colors.cyanAccent),),
+                                  )
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -186,11 +218,11 @@ class _HomePageState extends State<HomePage> {
                       padding: const EdgeInsets.all(10.0),
                       child: InkWell(
                         child: Container(
-                          height: 100,
-                          width: 100,
+                          height: 240,
+                          width: 240,
                           decoration: BoxDecoration(
                             color: Colors.pink,
-                            borderRadius: BorderRadius.circular(50),
+                            borderRadius: BorderRadius.circular(120),
                             boxShadow: [
                               const BoxShadow(
                                   blurRadius: 25.0, color: Colors.white)
@@ -337,6 +369,177 @@ class _HomePageState extends State<HomePage> {
                         },
                       ),
                     ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        height: 120,
+                        width: 120,
+                        decoration: BoxDecoration(
+
+                            borderRadius: BorderRadius.circular(10)
+                        ),
+                        child: Stack(
+                            children: [
+
+                              Positioned(
+                                  top: 50,
+                                  left: 5,
+                                  right: 0,
+                                  child: Container(
+                                    height: 70,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(10)
+                                    ),)),
+                              Positioned(
+                                  top: 98,
+                                  left: 15,
+                                  right: 0,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.phone,
+                                        color: Colors.red,
+                                      ),
+                                      Text("Dial 108",style: TextStyle(color: Colors.blue,fontSize: 20,fontWeight: FontWeight.w500),),
+                                    ],
+                                  )),
+                              Positioned(
+                                  top: 0,
+                                  left: -10,
+                                  right: 0,
+                                  child: SizedBox(
+                                      height: 100,
+                                      child: Image.network("https://clipartix.com/wp-content/uploads/2016/11/Ambulance-clipart-image-ambulance-truck.png"))),
+                              Positioned(
+                                  top: 75,
+                                  left: 15,
+                                  right: 0,
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.8),
+                                          borderRadius: BorderRadius.circular(5)
+                                      ),
+
+                                      child: Text("Ambulance",style: TextStyle(color: Colors.red,fontSize: 20,fontWeight: FontWeight.w500),))),
+
+                            ]
+                        ),
+                      ),
+                      Container(
+                        height: 120,
+                        width: 100,
+                        decoration: BoxDecoration(
+
+                          borderRadius: BorderRadius.circular(10)
+                        ),
+                        child: Stack(
+                          children: [
+
+                            Positioned(
+                                top: 70,
+                                left: 0,
+                                right: 0,
+                                child: Container(
+                                  height: 50,
+                                  width: 100,
+                                  decoration: BoxDecoration(
+color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10)
+                                  ),)),
+                            Positioned(
+                                top: 98,
+                                left: 5,
+                                right: 0,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.phone,
+                                      color: Colors.red,
+                                    ),
+                                    Text("Dial 100",style: TextStyle(color: Colors.blue,fontSize: 20,fontWeight: FontWeight.w500),),
+                                  ],
+                                )),
+                            Positioned(
+                                top: 0,
+                                left: -10,
+                                right: 0,
+                                child: SizedBox(
+                                    height: 100,
+                                    child: Image.network("https://icons.iconarchive.com/icons/aha-soft/free-large-boss/512/Policeman-icon.png"))),
+                            Positioned(
+                                top: 80,
+                                left: 45,
+                                right: 0,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.8),
+                                    borderRadius: BorderRadius.circular(5)
+                                  ),
+
+                                    child: Text("Police",style: TextStyle(color: Colors.red,fontSize: 20,fontWeight: FontWeight.w500),))),
+
+                          ]
+                        ),
+                      ),
+                      Container(
+                        height: 120,
+                        width: 120,
+                        decoration: BoxDecoration(
+
+                            borderRadius: BorderRadius.circular(10)
+                        ),
+                        child: Stack(
+                            children: [
+
+                              Positioned(
+                                  top: 50,
+                                  left: 10,
+                                  right: 0,
+                                  child: Container(
+                                    height: 70,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(10)
+                                    ),)),
+                              Positioned(
+                                  top: 98,
+                                  left: 15,
+                                  right: 0,
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.phone,
+                                        color: Colors.red,
+                                      ),
+                                      Text("Dial 104",style: TextStyle(color: Colors.blue,fontSize: 20,fontWeight: FontWeight.w500),),
+                                    ],
+                                  )),
+                              Positioned(
+                                  top: 0,
+                                  left: 0,
+                                  right: 0,
+                                  child: SizedBox(
+                                      height: 100,
+                                      child: Image.asset("assets/fireTruck.png"))),
+                              Positioned(
+                                  top: 75,
+                                  left: 15,
+                                  right: 0,
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.8),
+                                          borderRadius: BorderRadius.circular(5)
+                                      ),
+
+                                      child: Text("Fire Truck",style: TextStyle(color: Colors.red,fontSize: 20,fontWeight: FontWeight.w500),))),
+
+                            ]
+                        ),
+                      ),
+                    ],
                   ),
                   Padding(
                     padding: const EdgeInsets.all(10.0),
