@@ -1,5 +1,5 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
-
+import 'package:audioplayers/audioplayers.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
@@ -22,6 +22,7 @@ import 'package:wsa/speechRecognition.dart';
 import 'drivingModeDetector.dart';
 import 'googleMaps.dart';
 import 'notification.dart';
+import 'package:clay_containers/clay_containers.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -97,13 +98,21 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    Color baseColor = Color(0xFFF2F2F2);
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.blue, Colors.green],
+          colors: [
+            Color.fromRGBO(197, 222, 237, 1),
+            Color.fromRGBO(149, 182, 201, 1),
+            Color.fromRGBO(101, 137, 158, 1),
+            Color.fromRGBO(55, 85, 102, 1),
+            Color.fromRGBO(31, 49, 59, 1),
+            Color.fromRGBO(17, 27, 33, 1),
+          ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          stops: [0.0, 1.0],
+          // stops: [0.0, 1.0],
         ),
       ),
       child: Scaffold(
@@ -182,86 +191,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Flexible(
-                                flex: 1,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 5),
-                                  child: Container(
-                                    height: 40,
-                                    width: 45,
-                                    decoration: BoxDecoration(
-                                        color: Colors.black.withOpacity(0.5),
-                                        borderRadius: BorderRadius.circular(15),
-                                        image: DecorationImage(
-                                            image:
-                                                AssetImage("assets/th.jpg"))),
-                                  ),
-                                ),
-                              ),
-                              Flexible(
-                                flex: 5,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Text(
-                                          "Smart Band",
-                                          style: TextStyle(
-                                              color: Colors.black87,
-                                              fontSize: 25,
-                                              fontWeight: FontWeight.w500),
-                                        ),
-                                        const Spacer(),
-                                        if (false)
-                                          const Text(
-                                            "Not Conected",
-                                            style: TextStyle(color: Colors.red),
-                                          )
-                                        else
-                                          const Text(
-                                            "Conected",
-                                            style: TextStyle(
-                                                color: Color.fromRGBO(
-                                                  4,
-                                                  4,
-                                                  97,
-                                                  1,
-                                                ),
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w400),
-                                          )
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 10),
-                                      child: Text(
-                                        "Last Connected : Today",
-                                        style: TextStyle(
-                                            color: Color.fromRGBO(
-                                                16, 116, 156, 1)),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    smartBand(),
                     StreamBuilder<DocumentSnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection("users")
@@ -1996,12 +1926,162 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+class smartBand extends StatefulWidget {
+  const smartBand({Key? key}) : super(key: key);
+
+  @override
+  State<smartBand> createState() => _smartBandState();
+}
+
+class _smartBandState extends State<smartBand> {
+  int _secondsRemaining = 10;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(10)),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Flexible(
+                    flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Container(
+                        height: 40,
+                        width: 45,
+                        decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(15),
+                            image: DecorationImage(
+                                image: AssetImage("assets/th.jpg"))),
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 5,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Text(
+                              "Smart Band",
+                              style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            const Spacer(),
+                            if (false)
+                              const Text(
+                                "Not Conected",
+                                style: TextStyle(color: Colors.red),
+                              )
+                            else
+                              const Text(
+                                "Conected",
+                                style: TextStyle(
+                                    color: Color.fromRGBO(
+                                      4,
+                                      4,
+                                      97,
+                                      1,
+                                    ),
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w400),
+                              )
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Text(
+                            "Last Connected : Today",
+                            style: TextStyle(
+                                color: Color.fromRGBO(16, 116, 156, 1)),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            CountdownFormatted(
+              duration: Duration(seconds: _secondsRemaining),
+              onFinish: () {},
+              builder: (BuildContext ctx, String remaining) {
+                double count = 1 - double.parse("0.$remaining") * 6.67;
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          flex: 5,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 5, right: 5, bottom: 5),
+                            child: LinearProgressIndicator(
+                              minHeight: 7,
+                              value: count,
+                              color: 0.6 <= count
+                                  ? Colors.red
+                                  : Colors.greenAccent,
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                            flex: 1,
+                            child: Text(
+                              " Sec: $remaining",
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 17),
+                            )),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Text(
+                            "Tap to Cancel",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class ZoomInZoomOutContainer extends StatefulWidget {
   @override
   _ZoomInZoomOutContainerState createState() => _ZoomInZoomOutContainerState();
 }
 
 class _ZoomInZoomOutContainerState extends State<ZoomInZoomOutContainer> {
+  late AudioPlayer audioPlayer;
   int mode = 0;
   bool _isZooming = false;
   bool _isStarting = true;
@@ -2017,6 +2097,7 @@ class _ZoomInZoomOutContainerState extends State<ZoomInZoomOutContainer> {
   void initState() {
     super.initState();
     _currentColor = _colors[_currentColorIndex];
+    audioPlayer = AudioPlayer();
     Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         if (Height == 240) {
@@ -2034,6 +2115,22 @@ class _ZoomInZoomOutContainerState extends State<ZoomInZoomOutContainer> {
     });
   }
 
+  Future<void> playAlarmSound() async {
+    await audioPlayer.play(
+        AssetSource('alarm-furious-laboratory-cinematic-trailer-sound.mp3'));
+    audioPlayer.setReleaseMode(ReleaseMode.loop);
+  }
+
+  Future<void> stopAlarmSound() async {
+    await audioPlayer.stop();
+  }
+
+  @override
+  void dispose() {
+    stopAlarmSound();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -2046,21 +2143,27 @@ class _ZoomInZoomOutContainerState extends State<ZoomInZoomOutContainer> {
         child: Column(
           children: [
             _isStarting
-                ? Container(
+                ? ClayContainer(
+                    color: Colors.cyanAccent,
                     height: 240,
                     width: 240,
-                    decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.red, Colors.pink, Colors.purple],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          stops: [0.0, 0.5, 1.0],
-                        ),
-                        borderRadius: BorderRadius.circular(120)),
+                    borderRadius: 120,
+                    curveType: CurveType.concave,
                     child: Center(
-                      child: Text(
-                        "SOS",
-                        style: TextStyle(color: Colors.white, fontSize: 100),
+                      child: ClayContainer(
+                        height: 200,
+                        width: 200,
+                        borderRadius: 120,
+                        curveType: CurveType.convex,
+                        child: Center(
+                          child: Text(
+                            "SOS",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 80,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
                       ),
                     ),
                   )
@@ -2076,9 +2179,12 @@ class _ZoomInZoomOutContainerState extends State<ZoomInZoomOutContainer> {
                             _isZooming = false;
                             _isContainer = true;
                             _isStarting = false;
+                            playAlarmSound();
                           });
                         },
                         builder: (BuildContext ctx, String remaining) {
+                          double count =
+                              1 - double.parse("0.$remaining") * 6.67;
                           return AnimatedContainer(
                             duration: Duration(milliseconds: 700),
                             width: Width,
@@ -2096,8 +2202,7 @@ class _ZoomInZoomOutContainerState extends State<ZoomInZoomOutContainer> {
                                 Radiues: 150,
                                 backgroundColor: Colors.grey.withOpacity(0.6),
                                 foregroundColor: Colors.purple,
-                                percentageCompleted:
-                                    double.parse("0.${remaining}"),
+                                percentageCompleted: count,
                                 strokeWidth: 13.0,
                               ),
                               child: Column(
@@ -2173,6 +2278,7 @@ class _ZoomInZoomOutContainerState extends State<ZoomInZoomOutContainer> {
                               _isContainer = false;
                               _isZooming = false;
                               _isStarting = true;
+                              stopAlarmSound();
                             });
                           },
                         )
@@ -2181,120 +2287,7 @@ class _ZoomInZoomOutContainerState extends State<ZoomInZoomOutContainer> {
                   )
                 : Container(),
           ],
-        )
-        // child: AnimatedContainer(
-        //   duration: Duration(milliseconds: 500),
-        //   curve: Curves.easeInOut,
-        //   width: _isZoomed ? 350 : 200,
-        //   height: _isZoomed ? 300 : 200,
-        //   decoration: BoxDecoration(
-        //     color: Colors.blue,
-        //     borderRadius: BorderRadius.circular(_isZoomed ? 50 : 100),
-        //   ),
-        //   child: Center(
-        //     child: _isZoomed
-        //         ? Column(
-        //             children: [
-        //               if (mode == 0)
-        //                 if (_showText)
-        //                   Column(
-        //                     mainAxisAlignment: MainAxisAlignment.center,
-        //                     crossAxisAlignment: CrossAxisAlignment.center,
-        //                     children: [
-        //                       Text(
-        //                         "SOS",
-        //                         style: TextStyle(
-        //                             fontSize: 100,
-        //                             fontWeight: FontWeight.w800,
-        //                             color: Colors.red),
-        //                       ),
-        //                       Text(
-        //                         "IS",
-        //                         style: TextStyle(
-        //                             fontSize: 30, fontWeight: FontWeight.w500),
-        //                       ),
-        //                       Text(
-        //                         "Activated",
-        //                         style: TextStyle(
-        //                             fontSize: 60,
-        //                             fontWeight: FontWeight.w800,
-        //                             color: Colors.greenAccent),
-        //                       ),
-        //                       CountdownFormatted(
-        //                         duration: Duration(seconds: _secondsRemaining),
-        //                         onFinish: () {
-        //                           // setState(() {
-        //                           //   mode = 1;
-        //                           // });
-        //                         },
-        //                         builder: (BuildContext ctx, String remaining) {
-        //                           return Text(
-        //                             "Remaining Time : $remaining",
-        //                             style: const TextStyle(
-        //                                 color: Colors.white,
-        //                                 fontSize: 30,
-        //                                 fontWeight: FontWeight.w500),
-        //                           );
-        //                         },
-        //                       ),
-        //                       Padding(
-        //                         padding: const EdgeInsets.only(top: 15),
-        //                         child: Row(
-        //                           mainAxisAlignment:
-        //                               MainAxisAlignment.spaceEvenly,
-        //                           children: [
-        //                             InkWell(
-        //                               child: Container(
-        //                                 decoration: BoxDecoration(
-        //                                     color: Colors.redAccent,
-        //                                     borderRadius:
-        //                                         BorderRadius.circular(20)),
-        //                                 child: Padding(
-        //                                   padding: const EdgeInsets.all(8.0),
-        //                                   child: Text(
-        //                                     "Cancel",
-        //                                     style: TextStyle(fontSize: 25),
-        //                                   ),
-        //                                 ),
-        //                               ),
-        //                               onTap: () {
-        //                                 Navigator.pop(context);
-        //                               },
-        //                             ),
-        //                             Container(
-        //                               decoration: BoxDecoration(
-        //                                   color: Colors.greenAccent,
-        //                                   borderRadius:
-        //                                       BorderRadius.circular(20)),
-        //                               child: Padding(
-        //                                 padding: const EdgeInsets.all(8.0),
-        //                                 child: Text(
-        //                                   "Activate",
-        //                                   style: TextStyle(fontSize: 25),
-        //                                 ),
-        //                               ),
-        //                             ),
-        //                           ],
-        //                         ),
-        //                       ),
-        //                     ],
-        //                   )
-        //                 else if (mode == 1)
-        //                   Column(
-        //                     children: [],
-        //                   )
-        //             ],
-        //           )
-        //         : Text(
-        //             _isZoomed ? 'Zoomed In' : 'SOS',
-        //             style: TextStyle(
-        //               color: Colors.white,
-        //               fontSize: _isZoomed ? 30 : 20,
-        //             ),
-        //           ),
-        //   ),
-        // ),
-        );
+        ));
   }
 
   Color _getNextColor() {

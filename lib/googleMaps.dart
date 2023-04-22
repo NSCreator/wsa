@@ -117,6 +117,13 @@ class _MyMapWidgetState extends State<MyMapWidget> {
     _sourceLocation = LatLng(widget.lat, widget.lng);
   }
 
+  void _onMapTapped(LatLng location) {
+    setState(() {
+      _sourceLocation = location;
+    });
+    _mapController.animateCamera(CameraUpdate.newLatLng(location));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,7 +137,7 @@ class _MyMapWidgetState extends State<MyMapWidget> {
             child: GoogleMap(
               padding: EdgeInsets.only(bottom: 120),
               myLocationEnabled: true,
-              myLocationButtonEnabled: true,
+              myLocationButtonEnabled: false,
               compassEnabled: true,
               onMapCreated: (controller) {
                 _mapController = controller;
@@ -141,109 +148,180 @@ class _MyMapWidgetState extends State<MyMapWidget> {
               ),
               markers: <Marker>{
                 Marker(
-                  markerId: MarkerId("source"),
+                  markerId: MarkerId("You"),
                   position: _sourceLocation,
-                  infoWindow: InfoWindow(title: "Source"),
+                  infoWindow: InfoWindow(title: "You"),
                 ),
               },
+              // onTap: _onMapTapped,
             ),
           ),
           Positioned(
-            top: 100,
-            left: 100,
-            child: StreamBuilder<List<familyMembersConvertor>>(
-                stream: readFamilyMembers(),
-                builder: (context, snapshot) {
-                  final user1 = snapshot.data;
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return const Center(
-                          child: CircularProgressIndicator(
-                        strokeWidth: 0.3,
-                        color: Colors.cyan,
-                      ));
-                    default:
-                      if (snapshot.hasError) {
-                        return const Center(
-                            child: Text(
-                                'Error with TextBooks Data or\n Check Internet Connection'));
-                      } else {
-                        return SizedBox(
-                          height: 30,
-                          child: ListView.separated(
-                              physics: const BouncingScrollPhysics(),
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: true,
-                              itemCount: user1!.length,
-                              itemBuilder: (context, int index) {
-                                final SubjectsData1 = user1[index];
-                                return StreamBuilder<DocumentSnapshot>(
-                                    stream: FirebaseFirestore.instance
-                                        .collection("users")
-                                        .doc(SubjectsData1.name)
-                                        .snapshots(),
-                                    builder: (context, mainsnapshot) {
-                                      switch (mainsnapshot.connectionState) {
-                                        case ConnectionState.waiting:
-                                          return const Center(
-                                              child: CircularProgressIndicator(
-                                            strokeWidth: 0.3,
-                                            color: Colors.cyan,
-                                          ));
-                                        default:
-                                          if (mainsnapshot.data!.exists) {
-                                            return InkWell(
-                                                child: Container(
-                                              decoration: BoxDecoration(
-                                                  color: Colors.greenAccent,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10)),
-                                              child: Row(
-                                                children: [
-                                                  Container(
-                                                    height: 30,
-                                                    width: 38,
+            top: 50,
+            left: 10,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Color.fromRGBO(76, 237, 167, 0.5),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.blue)),
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 38,
+                          width: 38,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.8),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Icon(
+                            Icons.my_location,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(3.0),
+                          child: Text(
+                            "Live Location",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  onTap: () {
+                    _onMapTapped(LatLng(45.521563, -122.677433));
+                  },
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                StreamBuilder<List<familyMembersConvertor>>(
+                    stream: readFamilyMembers(),
+                    builder: (context, snapshot) {
+                      final user1 = snapshot.data;
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.waiting:
+                          return const Center(
+                              child: CircularProgressIndicator(
+                            strokeWidth: 0.3,
+                            color: Colors.cyan,
+                          ));
+                        default:
+                          if (snapshot.hasError) {
+                            return const Center(
+                                child: Text(
+                                    'Error with TextBooks Data or\n Check Internet Connection'));
+                          } else {
+                            return SizedBox(
+                              height: 40,
+                              child: ListView.builder(
+                                physics: const BouncingScrollPhysics(),
+                                scrollDirection: Axis.horizontal,
+                                shrinkWrap: true,
+                                itemCount: user1!.length,
+                                itemBuilder: (context, int index) {
+                                  final SubjectsData1 = user1[index];
+                                  return StreamBuilder<DocumentSnapshot>(
+                                      stream: FirebaseFirestore.instance
+                                          .collection("users")
+                                          .doc(SubjectsData1.name)
+                                          .snapshots(),
+                                      builder: (context, mainsnapshot) {
+                                        switch (mainsnapshot.connectionState) {
+                                          case ConnectionState.waiting:
+                                            return const Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                              strokeWidth: 0.3,
+                                              color: Colors.cyan,
+                                            ));
+                                          default:
+                                            if (mainsnapshot.data!.exists) {
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 2, right: 5),
+                                                child: InkWell(
+                                                  child: Container(
                                                     decoration: BoxDecoration(
-                                                        color: Colors.green,
+                                                        color: Color.fromRGBO(
+                                                                156,
+                                                                240,
+                                                                231,
+                                                                0.5)
+                                                            .withOpacity(0.8),
                                                         borderRadius:
                                                             BorderRadius
-                                                                .circular(10),
-                                                        image: DecorationImage(
-                                                            image: NetworkImage(
-                                                          mainsnapshot.data![
-                                                              "photoUrl"],
-                                                        ))),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            3.0),
-                                                    child: Text(
-                                                      mainsnapshot
-                                                          .data!["name"],
-                                                      style: TextStyle(
-                                                          color: Colors.black,
-                                                          fontSize: 20),
+                                                                .circular(20),
+                                                        border: Border.all(
+                                                            color: Colors
+                                                                .black54)),
+                                                    child: Row(
+                                                      children: [
+                                                        Container(
+                                                          height: 38,
+                                                          width: 38,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                                  color: Colors
+                                                                      .green,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              20),
+                                                                  image: DecorationImage(
+                                                                      image: NetworkImage(
+                                                                        mainsnapshot
+                                                                            .data!["photoUrl"],
+                                                                      ),
+                                                                      fit: BoxFit.cover)),
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(3.0),
+                                                          child: Text(
+                                                            mainsnapshot
+                                                                .data!["name"],
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 20,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700),
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
-                                                ],
-                                              ),
-                                            ));
-                                          } else {
-                                            return Container();
-                                          }
-                                      }
-                                    });
-                              },
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(
-                                    width: 5,
-                                  )),
-                        );
+                                                  onTap: () {
+                                                    _onMapTapped(LatLng(
+                                                        45.521563,
+                                                        -122.677433));
+                                                  },
+                                                ),
+                                              );
+                                            } else {
+                                              return Container();
+                                            }
+                                        }
+                                      });
+                                },
+                              ),
+                            );
+                          }
                       }
-                  }
-                }),
+                    })
+              ],
+            ),
           ),
           DraggableScrollableSheet(
             initialChildSize: .14,
