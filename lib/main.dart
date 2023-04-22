@@ -6,12 +6,12 @@ import 'package:wsa/profilePage.dart';
 
 import 'authPage.dart';
 
-
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-    runApp(MyApp());
+  runApp(MyApp());
 }
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return profile();
+              return HomePage();
             } else {
               return LoginPage();
             }
@@ -30,4 +30,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

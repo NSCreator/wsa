@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -9,14 +8,13 @@ class notificationPage extends StatefulWidget {
 
 class _notificationPageState extends State<notificationPage> {
   late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-
   @override
   void initState() {
     super.initState();
     var initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettings =
-    InitializationSettings(android: initializationSettingsAndroid);
+        InitializationSettings(android: initializationSettingsAndroid);
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
@@ -38,7 +36,7 @@ class _notificationPageState extends State<notificationPage> {
         "channelId", "Local Notification",
         importance: Importance.high);
     var generalNotificationDetails =
-    NotificationDetails(android: androidDetails);
+        NotificationDetails(android: androidDetails);
     await flutterLocalNotificationsPlugin.show(
         0, "Warning", "Hello world!", generalNotificationDetails,
         payload: "Welcome to the Local Notification demo");
